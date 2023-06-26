@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ミクロン・シミュレータ</title>
+    <meta name="description" content="CPUのシミュレータです。">
+    <link rel="stylesheet" href="assets/css/sanitize.css">
+    <script src="https://kit.fontawesome.com/e06fe93cc1.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <h1 class="title">ミクロン・シミュレータ</h1>
+    <div class="button-and-register-and-flag">
+        <div class="run-stop-buttons">
+            <button class="run-all-button run-stop-button" id="run-all-button">
+                <i class="fa-solid fa-play"></i>
+            </button>
+            <button class="run-step-stop-button run-stop-button" id="run_step_button">
+                <i class="fa-solid fa-forward-step"></i>
+            </button>
+            <button class="run-step-stop-button run-stop-button" id="stop_button">
+                <i class="fa-solid fa-stop"></i>
+            </button>
+            <form action="" class="speed">
+                <label for="speed">実行速度</label>
+                <select name="speed" class="speed-selecter" id="speed">
+                    <option value="125">0.125秒／1命令</option>
+                    <option value="250">0.25秒／1命令</option>
+                    <option value="1000">1.0秒／1命令</option>
+                </select>
+            </form>
+        </div>
+        <div class="registers-and-flags">
+            <h1 class="registers-and-flags-title">レジスタ/フラグ</h1>
+            <table class="registers-and-flags-table">
+                <tr class="registers-and-flags-names">
+                    <th class="registers-and-flags-name registers-and-flags-item">A</th>
+                    <th class="registers-and-flags-name registers-and-flags-item">B</th>
+                    <th class="registers-and-flags-name registers-and-flags-item">C</th>
+                    <th class="registers-and-flags-name registers-and-flags-item">IP</th>
+                    <th class="registers-and-flags-name registers-and-flags-item">Z</th>
+                    <th class="registers-and-flags-name registers-and-flags-item">C</th>
+                    <th class="registers-and-flags-name registers-and-flags-item">N</th>
+                </tr>
+                <tr class="registers-and-flags-values">
+                    <td class="registers-and-flags-value  registers-and-flags-item" id="a">00</td>
+                    <td class="registers-and-flags-value  registers-and-flags-item" id="b">00</td>
+                    <td class="registers-and-flags-value  registers-and-flags-item" id="c">00</td>
+                    <td class="registers-and-flags-value  registers-and-flags-item" id="ip">00</td>
+                    <td class="registers-and-flags-value  registers-and-flags-item" id="zero">F</td>
+                    <td class="registers-and-flags-value  registers-and-flags-item" id="carry">F</td>
+                    <td class="registers-and-flags-value  registers-and-flags-item" id="negative">F</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="memory">
+        <div class="title-and-reset-button">
+            <h1 class="memory-title">メモリ</h1>
+            <p class="error-message" id="error_message"></p>
+            <button class="reset-button" id="reset-button">リセット</button>
+        </div>
+        <div class="memory-map">
+            <div class="first-addresses">
+                <p class="first-address">0x00番地</p>
+                <p class="first-address">0x10番地</p>
+                <p class="first-address">0x20番地</p>
+                <p class="first-address">0x30番地</p>
+                <p class="first-address">0x40番地</p>
+                <p class="first-address">0x50番地</p>
+                <p class="first-address">0x60番地</p>
+                <p class="first-address">0x70番地</p>
+                <p class="first-address">0x80番地</p>
+                <p class="first-address">0x90番地</p>
+                <p class="first-address">0xA0番地</p>
+            </div>
+            <form action="" class="addresses" id="addresses">
+                <table class="address-table">
+                    <tr class="addresses-line">
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td class="center"><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                    </tr>
+                    <tr class="addresses-line">
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td class="center"><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                    </tr>
+                    <tr class="addresses-line">
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td class="center"><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                    </tr>
+                    <tr class="addresses-line">
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td class="center"><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                    </tr>
+                    <tr class="addresses-line">
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td class="center"><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                    </tr>
+                    <tr class="addresses-line">
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td class="center"><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                    </tr>
+                    <tr class="addresses-line">
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td class="center"><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                    </tr>
+                    <tr class="addresses-line">
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td class="center"><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                    </tr>
+                    <tr class="addresses-line">
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td class="center"><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                    </tr>
+                    <tr class="addresses-line">
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td class="center"><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                    </tr>
+                    <tr class="addresses-line">
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td class="center"><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                        <td><input type="text" value="00" class="adress" maxlength="2"></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+
+    <script src="./assets/js/app.js"></script>
+</body>
+</html>

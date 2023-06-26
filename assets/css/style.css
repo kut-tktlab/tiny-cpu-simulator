@@ -1,0 +1,181 @@
+@charset "utf-8";
+
+/* 
+基本スタイル 
+*/
+body {
+    font-family: "Helvetica Neue", "Helvetica", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Arial", "Yu Gothic", "Meiryo", sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #333;
+}
+
+/* 
+ボタン 
+*/
+button {
+    box-shadow: 6px 6px 10px 0px rgba(0, 0, 0, 0.4);
+    border-radius:7px;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+button:active {
+    box-shadow: none;
+}
+
+/* 
+タイトル 
+*/
+.title {
+    margin: 0;
+    padding: 10px 0;
+    background-color: #87CEFA;
+    text-align: center;
+    font-size: 35px;
+}
+
+/* 
+実行ボタン・レジスタ/フラグ 
+*/
+.button-and-register-and-flag {
+    display: flex;
+    margin: 30px 65px;
+}
+
+/* 
+実行ボタン 
+*/
+.run-stop-buttons {
+    margin: 0 10px;
+    width: 33%;
+    text-align: center;
+}
+
+.run-stop-button {
+    width: 70px;
+    height: 70px;
+    font-size: 50px;
+    margin: 38px 10px;
+}
+
+.run-all-button {
+    background-color: #FAB387;
+    border: #FAB387;
+}
+
+.run-step-stop-button {
+    background-color: #fff;
+}
+
+/* 
+実行速度 
+*/
+.speed {
+    font-size: 20px;
+}
+
+.speed-selecter {
+    text-align: center;
+    font-size: 20px;
+}
+
+/* 
+レジスタ/フラグ 
+ */
+.registers-and-flags {
+    border: 2px solid #C8E7FA;
+    width: 66%;
+    height: 25%;
+    margin-top: 15px;
+}
+
+.registers-and-flags-title {
+    background-color: #C8E7FA;
+    margin: 0;
+    padding: 0 15px;
+    font-size: 30px;
+    font-weight: normal;
+}
+
+.registers-and-flags-table {
+    text-align: center;
+    margin: 0 auto;
+}
+
+.registers-and-flags-item {
+    font-size: 25px;
+    padding: 5px 30px;
+}
+
+.registers-and-flags-name {
+    border-bottom: 2px solid #C8E7FA;
+}
+
+/* 
+メモリ 
+*/
+.memory {
+    margin: 0 30px;
+    border: 2px solid #C8E7FA;
+}
+
+.title-and-reset-button {
+    background-color: #C8E7FA;
+    display: flex;
+    justify-content: space-between;
+}
+
+.memory-title {
+    margin: 5px 0;
+    padding: 0 15px;
+    font-size: 30px;
+    font-weight: normal;
+}
+
+.error-message {
+    font-size: 20px;
+    color: #ff0000;
+    margin: 0;
+    margin-top: 13px;
+}
+
+.reset-button {
+    margin: 5px;
+    font-size: 20px;
+    background-color: #fff;
+}
+
+.memory-map {
+    display: flex;
+}
+
+.first-addresses {
+    width: 20%;
+    margin: 5px 0;
+    text-align: center;
+    border-right: 1px solid #C8E7FA;
+}
+
+.first-address {
+    margin: 0;
+    font-size: 25px;
+}
+
+.addresses {
+    width: 80%;
+    padding: 10px;
+}
+
+.adress {
+    font-size: 25px;
+    width: 100%;
+    text-align: center;
+    box-shadow: none;
+}
+
+.center {
+    padding-right: 20px;
+}
