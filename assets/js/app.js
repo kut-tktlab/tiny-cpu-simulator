@@ -24,7 +24,7 @@ const output_error_message = document.getElementById("error_message");
 const address_form = document.getElementById("addresses");
 
 // メモリの値
-const addresses = document.getElementsByClassName("adress");
+const addresses = document.getElementsByClassName("address");
 
 // エラーメッセージ
 let error_message = "";
