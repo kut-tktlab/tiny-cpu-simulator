@@ -144,6 +144,12 @@
         background-color: #fff;
     }
 
+    .download-button {
+        padding: 5px 10px;
+        font-size: 20px;
+        background-color: #fff;
+    }
+
     .memory-map {
         display: flex;
     }
@@ -328,6 +334,12 @@
 
     .reset-button {
         margin: 5px;
+        font-size: 20px;
+        background-color: #fff;
+    }
+
+    .download-button {
+        padding: 5px 10px;
         font-size: 20px;
         background-color: #fff;
     }

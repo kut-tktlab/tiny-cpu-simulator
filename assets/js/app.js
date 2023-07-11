@@ -3,6 +3,7 @@ const run_all_button = document.getElementById("run-all-button");
 const stop_button = document.getElementById("stop_button");
 const run_step_button = document.getElementById("run_step_button")
 const reset_button = document.getElementById("reset-button");
+const download_button = document.getElementById("download-button");
 
 // 実行速度
 const speed = document.getElementById("speed");
@@ -606,6 +607,23 @@ reset_button.onclick = () => {
         addresses[i].style.backgroundColor = "";
         addresses[i].style.borderWidth = "";
     }
+}
+
+// ダウンロードボタンの動作
+download_button.onclick = () => {
+    let hex = "";
+
+    for (let i = 0; i < addresses.length; i++) {
+        hex = hex + `${addresses[i].value.padStart(2, '0')} `;
+    }
+
+    let blob = new Blob([hex], {type: 'text/plain'});
+    let url = URL.createObjectURL(blob);
+
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = 'program.txt';
+    link.click();
 }
 
 // メモリ入力後、enterを押したら次のメモリに移動する動作
