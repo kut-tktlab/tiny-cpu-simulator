@@ -309,6 +309,7 @@
     */
     .memory {
         margin: 0 30px;
+        margin-bottom: 30px;
         border: 2px solid #C8E7FA;
     }
 
