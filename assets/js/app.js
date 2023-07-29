@@ -4,6 +4,7 @@ const stop_button = document.getElementById("stop_button");
 const run_step_button = document.getElementById("run_step_button")
 const reset_button = document.getElementById("reset-button");
 const download_button = document.getElementById("download-button");
+const upload_button = document.getElementById("upload-button");
 
 // 実行速度
 const speed = document.getElementById("speed");
@@ -624,6 +625,33 @@ download_button.onclick = () => {
     link.href = url;
     link.download = 'program.txt';
     link.click();
+}
+
+// アップロードボタンの動作
+upload_button.onclick = () => {
+    const file_input = document.createElement("input");
+    file_input.type = "file";
+    file_input.accept = ".txt";
+    file_input.style.display = "none";
+
+    file_input.addEventListener("change", (e) => {
+        let selected_file = e.target.files[0];
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            let content = reader.result;
+            let memory_values = content.split(" ");
+
+            for (let i = 0; i < memory_values.length - 1; i++) {
+                addresses[i].value = memory_values[i];
+            }
+        }
+
+        reader.readAsText(selected_file);
+    });
+
+    document.body.appendChild(file_input);
+    file_input.click();
 }
 
 // メモリ入力後、enterを押したら次のメモリに移動する動作
