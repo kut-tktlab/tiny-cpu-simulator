@@ -59,14 +59,20 @@
     </div>
     <div class="memory">
         <div class="title-and-reset-button">
-            <h1 class="memory-title">メモリ</h1>
+            <div class="memory-header-left">
+                <h1 class="memory-title">メモリ</h1>
+                <div class="shift-btns">
+                    <button class="memory-header-button" id="shift-left-button"><i class="fa-solid fa-arrow-left"></i></button>
+                    <input type="text" value="00" class="base-address" id="base-address" maxlength="2">
+                    <button class="memory-header-button" id="shift-right-button"><i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
             <p class="error-message" id="error_message"></p>
             <div>
-                <button class="upload-download-button" id="upload-button"><i class="fa-solid fa-file-arrow-up"></i></button>
-                <button class="upload-download-button" id="download-button"><i class="fa-solid fa-file-arrow-down"></i></button>
+                <button class="memory-header-button" id="upload-button"><i class="fa-solid fa-file-arrow-up"></i></button>
+                <button class="memory-header-button" id="download-button"><i class="fa-solid fa-file-arrow-down"></i></button>
                 <button class="reset-button" id="reset-button">リセット</button>
             </div>
-            
         </div>
         <div class="memory-map">
             <div class="first-addresses">

@@ -5,6 +5,11 @@ const run_step_button = document.getElementById("run_step_button")
 const reset_button = document.getElementById("reset-button");
 const download_button = document.getElementById("download-button");
 const upload_button = document.getElementById("upload-button");
+const shift_left_button = document.getElementById("shift-left-button");
+const shift_right_button = document.getElementById("shift-right-button");
+
+// シフト用のメモリ
+const base_address = document.getElementById("base-address");
 
 // 実行速度
 const speed = document.getElementById("speed");
@@ -131,6 +136,11 @@ const error = (message) => {
 }
 
 // メモリの入力制限
+base_address.oninput = () => {
+    let memory_value = base_address.value;
+    base_address.value = memory_value.replace(/[^A-Fa-f0-9]/, "");
+}
+
 for (let i = 0; i < addresses.length; i++) {
     addresses[i].oninput = () => {
         let memory_value = addresses[i].value;
@@ -597,6 +607,38 @@ stop_button.onclick = () => {
         registers[4] = 0;
         stop();
     }
+}
+
+// 左シフトボタンの動作
+shift_left_button.onclick = () => {
+    let address_num = parseInt(base_address.value, 16);
+    
+    if (address_num > addresses.length - 1) {
+        error("シフト用のアドレスの指定に誤りがあります");
+        return;
+    }
+
+    for (let i = address_num + 1; i < addresses.length; i++) {
+        addresses[i - 1].value = addresses[i].value;
+    }
+    
+    addresses[addresses.length - 1].value = "00";
+}
+
+// 右シフトボタンの動作
+shift_right_button.onclick = () => {
+    let address_num = parseInt(base_address.value, 16);
+
+    if (address_num > addresses.length - 1) {
+        error("シフト用のアドレスの指定に誤りがあります");
+        return;
+    }
+
+    for (let i = addresses.length - 2; i >= address_num; i--) {
+        addresses[i + 1].value = addresses[i].value;
+    }
+
+    addresses[address_num].value = "00";
 }
 
 // リセットボタンの動作

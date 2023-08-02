@@ -319,11 +319,23 @@
         justify-content: space-between;
     }
 
+    .memory-header-left {
+        display: flex;
+        align-items: center;
+    }
+
     .memory-title {
         margin: 5px 0;
         padding: 0 15px;
         font-size: 30px;
         font-weight: normal;
+    }
+
+    .base-address {
+        width: 50px;
+        padding: 5px 0;
+        font-size: 25px;
+        text-align: center;
     }
 
     .error-message {
@@ -339,7 +351,7 @@
         background-color: #fff;
     }
 
-    .upload-download-button {
+    .memory-header-button {
         padding: 5px 10px;
         font-size: 20px;
         background-color: #fff;
