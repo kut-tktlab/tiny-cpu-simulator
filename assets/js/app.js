@@ -24,8 +24,10 @@ const carry = document.getElementById("carry");
 const negative = document.getElementById("negative");
 
 
-// エラーメッセージを表示するpタグ
+// エラーメッセージやヒントを表示するpタグ
 const output_error_message = document.getElementById("error_message");
+const download_tool_tip = document.getElementById("download-tool-tip");
+const upload_tool_tip = document.getElementById("upload-tool-tip");
 
 // メモリマップを表すフォーム
 const address_form = document.getElementById("addresses");
@@ -134,6 +136,23 @@ const error = (message) => {
     registers[4] = 0;
     stop();
 }
+
+// ヒントの表示・非表示
+upload_button.addEventListener("mouseover", () => {
+    upload_tool_tip.style.display = "block";
+}, false);
+
+upload_button.addEventListener("mouseleave", () => {
+    upload_tool_tip.style.display = "none";
+}, false);
+
+download_button.addEventListener("mouseover", () => {
+    download_tool_tip.style.display = "block";
+}, false);
+
+download_button.addEventListener("mouseleave", () => {
+    download_tool_tip.style.display = "none";
+}, false);
 
 // メモリの入力制限
 base_address.oninput = () => {
