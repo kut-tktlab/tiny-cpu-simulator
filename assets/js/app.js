@@ -676,7 +676,8 @@ download_button.onclick = () => {
     let hex = "";
 
     for (let i = 0; i < addresses.length; i++) {
-        hex = hex + `${addresses[i].value.padStart(2, '0')} `;
+        hex = hex + `${addresses[i].value.padStart(2, '0')}`
+                  + (i % 16 == 15 ? "\n" : " ");
     }
 
     let blob = new Blob([hex], {type: 'text/plain'});
@@ -701,7 +702,7 @@ upload_button.onclick = () => {
         const reader = new FileReader();
         reader.onload = () => {
             let content = reader.result;
-            let memory_values = content.split(" ");
+            let memory_values = content.split(/\s+/);
 
             for (let i = 0; i < memory_values.length - 1; i++) {
                 addresses[i].value = memory_values[i];
