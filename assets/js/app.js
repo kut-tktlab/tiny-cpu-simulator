@@ -51,6 +51,7 @@ let is_error = false;
 let process;
 let past_address_number = null;
 let used_memories = null;
+let past_accessed_address = null;
 
 // 値が代入されたメモリ
 let located_memorys = [];
@@ -447,6 +448,11 @@ const str_or_ldr = (argument) => {
         // レジスタの表示を更新
         update_register(register_num1);
     }
+
+    // アクセスしたメモリセルの色を変える
+    addresses[read_address].style.backgroundColor =
+        (argument === "str" ? "#f3cccd" : "#d9ead4");
+    past_accessed_address = read_address;
 }
 
 // 命令と使用するメモリの数
@@ -486,6 +492,10 @@ const output_memory = () => {
                 addresses[i].style.borderWidth = "";
             }
         }
+    }
+    if (past_accessed_address !== null) {
+        addresses[past_accessed_address].style.backgroundColor = "";
+        past_accessed_address = null;
     }
 
     // 命令が書いてあるアドレスを保存
@@ -668,6 +678,10 @@ reset_button.onclick = () => {
     for (let i = past_address_number; i < past_address_number + used_memories - 1; i++) {
         addresses[i].style.backgroundColor = "";
         addresses[i].style.borderWidth = "";
+    }
+    if (past_accessed_address !== null) {
+        addresses[past_accessed_address].style.backgroundColor = "";
+        past_accessed_address = null;
     }
 }
 
