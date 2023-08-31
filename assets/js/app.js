@@ -170,7 +170,7 @@ for (let i = 0; i < addresses.length; i++) {
 
 // 実行停止
 const stop = () => {
-    clearInterval(process);
+    clearTimeout(process);
     is_running = false;
     is_end = false;
     is_error = false;
@@ -565,6 +565,24 @@ const output_memory = () => {
     }
 }
 
+// 定期実行器
+const interval_runner = () => {
+    if (is_running) {
+        output_memory();
+    }
+    // output_memory内でis_running = falseになることがあるので再度チェック
+    if (is_running) {
+        // 実行速度を取得
+        const run_speed = speed.value;
+
+        // プログラム実行
+        process = setTimeout(interval_runner, run_speed);
+        // 次のタスクまでの間隔が output_memoryの処理時間 + run_speed
+        // になってしまうが, output_memory実行中に次のoutput_memoryが
+        // 実行される方が嫌なので, あえてこうしている.
+    }
+}
+
 // 実行ボタンの動作
 run_all_button.onclick = () => {
     // 0.8秒間隔で命令を実行
@@ -594,7 +612,7 @@ run_all_button.onclick = () => {
         const run_speed = speed.value;
 
         // プログラム実行
-        process = setInterval(output_memory, run_speed);
+        process = setTimeout(interval_runner, run_speed);
     }
 }
 
