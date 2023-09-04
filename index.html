@@ -62,11 +62,6 @@
         <div class="title-and-reset-button">
             <div class="memory-header-left">
                 <h1 class="memory-title">メモリ</h1>
-                <div class="shift-btns">
-                    <button class="memory-header-button" id="shift-left-button"><i class="fa-solid fa-arrow-left"></i></button>
-                    <input type="text" value="00" class="base-address" id="base-address" maxlength="2">
-                    <button class="memory-header-button" id="shift-right-button"><i class="fa-solid fa-arrow-right"></i></button>
-                </div>
             </div>
             <p class="error-message" id="error_message"></p>
             <div class="memory-header-right">
@@ -431,6 +426,17 @@
                     </tr>
                 </table>
             </form>
+        </div>
+        <div class="title-and-reset-button">
+            <div></div>
+            <div class="shift-btns">
+                メモリ操作:
+                <input type="text" value="00" class="base-address" id="base-address" maxlength="2">
+                番地以降を
+                <button class="reset-button" id="shift-left-button">左に移動</button>
+                <button class="reset-button" id="shift-right-button">右に移動</button>
+                <button class="reset-button" id="block-clear-button">ゼロクリア</button>
+            </div>
         </div>
     </div>
 

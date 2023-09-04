@@ -53,9 +53,6 @@ let past_address_number = null;
 let used_memories = null;
 let past_accessed_address = null;
 
-// 値が代入されたメモリ
-let located_memorys = [];
-
 // レジスタと値の対応
 const registers = {
     1: 0, 
@@ -437,11 +434,6 @@ const str_or_ldr = (argument) => {
     // 値をコピー
     if (argument === "str") {
         addresses[read_address].value = ('00' + registers[register_num1].toString(16)).slice(-2);
-
-        // コピー先のアドレスを保存していない場合保存する
-        if (located_memorys.indexOf(read_address) === -1) {
-            located_memorys[located_memorys.length] = read_address;
-        }
     } else {
         registers[register_num1] = parseInt(addresses[read_address].value, 16);
 
@@ -589,13 +581,6 @@ run_all_button.onclick = () => {
     if(!is_running) {
         is_running = true;
 
-        // 値がコピーされたメモリがある場合は初期化
-        if (located_memorys.length !== 0) {
-            for (let i = 0; i < located_memorys.length; i++) {
-                addresses[located_memorys[i]].value = "00";
-            }
-        }
-
         // レジスタ初期化
         for(let i = 1; i < Object.keys(registers).length + 1; i++) {
             registers[i] = 0;
@@ -625,13 +610,6 @@ run_step_button.onclick = () => {
 
     // 最初のメモリを実行する場合はレジスタとフラグとメモリの色を初期化
     if (registers[4] === 0) {
-        // 値がコピーされたメモリがある場合は初期化
-        if (located_memorys.length !== 0) {
-            for (let i = 0; i < located_memorys.length; i++) {
-                addresses[located_memorys[i]].value = "00";
-            }
-        }
-
         // レジスタを初期化
         for(let i = 1; i < Object.keys(registers).length + 1; i++) {
             registers[i] = 0;
