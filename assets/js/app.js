@@ -51,6 +51,7 @@ let is_error = false;
 let process;
 let past_address_number = null;
 let used_memories = null;
+let past_accessed_address = null;
 
 // 値が代入されたメモリ
 let located_memorys = [];
@@ -169,7 +170,7 @@ for (let i = 0; i < addresses.length; i++) {
 
 // 実行停止
 const stop = () => {
-    clearInterval(process);
+    clearTimeout(process);
     is_running = false;
     is_end = false;
     is_error = false;
@@ -447,6 +448,11 @@ const str_or_ldr = (argument) => {
         // レジスタの表示を更新
         update_register(register_num1);
     }
+
+    // アクセスしたメモリセルの色を変える
+    addresses[read_address].style.backgroundColor =
+        (argument === "str" ? "#f3cccd" : "#d9ead4");
+    past_accessed_address = read_address;
 }
 
 // 命令と使用するメモリの数
@@ -486,6 +492,10 @@ const output_memory = () => {
                 addresses[i].style.borderWidth = "";
             }
         }
+    }
+    if (past_accessed_address !== null) {
+        addresses[past_accessed_address].style.backgroundColor = "";
+        past_accessed_address = null;
     }
 
     // 命令が書いてあるアドレスを保存
@@ -555,6 +565,24 @@ const output_memory = () => {
     }
 }
 
+// 定期実行器
+const interval_runner = () => {
+    if (is_running) {
+        output_memory();
+    }
+    // output_memory内でis_running = falseになることがあるので再度チェック
+    if (is_running) {
+        // 実行速度を取得
+        const run_speed = speed.value;
+
+        // プログラム実行
+        process = setTimeout(interval_runner, run_speed);
+        // 次のタスクまでの間隔が output_memoryの処理時間 + run_speed
+        // になってしまうが, output_memory実行中に次のoutput_memoryが
+        // 実行される方が嫌なので, あえてこうしている.
+    }
+}
+
 // 実行ボタンの動作
 run_all_button.onclick = () => {
     // 0.8秒間隔で命令を実行
@@ -584,7 +612,7 @@ run_all_button.onclick = () => {
         const run_speed = speed.value;
 
         // プログラム実行
-        process = setInterval(output_memory, run_speed);
+        process = setTimeout(interval_runner, run_speed);
     }
 }
 
@@ -669,6 +697,10 @@ reset_button.onclick = () => {
         addresses[i].style.backgroundColor = "";
         addresses[i].style.borderWidth = "";
     }
+    if (past_accessed_address !== null) {
+        addresses[past_accessed_address].style.backgroundColor = "";
+        past_accessed_address = null;
+    }
 }
 
 // ダウンロードボタンの動作
@@ -676,7 +708,8 @@ download_button.onclick = () => {
     let hex = "";
 
     for (let i = 0; i < addresses.length; i++) {
-        hex = hex + `${addresses[i].value.padStart(2, '0')} `;
+        hex = hex + `${addresses[i].value.padStart(2, '0')}`
+                  + (i % 16 == 15 ? "\n" : " ");
     }
 
     let blob = new Blob([hex], {type: 'text/plain'});
@@ -701,7 +734,7 @@ upload_button.onclick = () => {
         const reader = new FileReader();
         reader.onload = () => {
             let content = reader.result;
-            let memory_values = content.split(" ");
+            let memory_values = content.split(/\s+/);
 
             for (let i = 0; i < memory_values.length - 1; i++) {
                 addresses[i].value = memory_values[i];
