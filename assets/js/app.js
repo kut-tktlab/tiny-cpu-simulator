@@ -695,7 +695,7 @@ download_button.onclick = () => {
 
     var link = document.createElement('a');
     link.href = url;
-    link.download = 'program.txt';
+    link.download = 'program.hex';
     link.click();
 }
 
@@ -703,7 +703,7 @@ download_button.onclick = () => {
 upload_button.onclick = () => {
     const file_input = document.createElement("input");
     file_input.type = "file";
-    file_input.accept = ".txt";
+    file_input.accept = ".hex,.txt";
     file_input.style.display = "none";
 
     file_input.addEventListener("change", (e) => {
