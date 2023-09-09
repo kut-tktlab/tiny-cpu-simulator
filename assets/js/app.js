@@ -325,7 +325,7 @@ const cmp = () => {
     update_flag();
 }
 
-// b命令（ジャンプ命令）
+// ジャンプ命令
 const jump = (conditions) => {
     // ジャンプ先のアドレスを取得
     registers[4]++;
@@ -349,6 +349,10 @@ const jump = (conditions) => {
         }
     } else if (conditions === "==") {
         if (flags[1]) {
+            judge = true;
+        }
+    }else if (conditions === "!=") {
+        if (!flags[1]) {
             judge = true;
         }
     } else if (conditions === "<=") {
@@ -427,10 +431,11 @@ const orders = [
     [jump, 2],          // 07: ジャンプ命令(>)
     [jump, 2],          // 08: ジャンプ命令(>=)
     [jump, 2],          // 09: ジャンプ命令(==)
-    [jump, 2],          // 0a: ジャンプ命令(<=)
-    [jump, 2],          // 0b: ジャンプ命令(<)
-    [str_or_ldr, 3],    // 0c: メモリにレジスタの値をコピーする命令
-    [str_or_ldr, 3],    // 0d: レジスタにメモリの値をコピーする命令
+    [jump, 2],          // 0a: ジャンプ命令(!=)
+    [jump, 2],          // 0b: ジャンプ命令(<=)
+    [jump, 2],          // 0c: ジャンプ命令(<)
+    [str_or_ldr, 3],    // 0d: メモリにレジスタの値をコピーする命令
+    [str_or_ldr, 3],    // 0e: レジスタにメモリの値をコピーする命令
 ];
 
 // メモリの値に対応する命令を実行
@@ -502,12 +507,14 @@ const output_memory = () => {
     } else if (address_value === 9) {
         orders[address_value][0]("==");
     } else if (address_value === 10) {
-        orders[address_value][0]("<=");
+        orders[address_value][0]("!=");
     } else if (address_value === 11) {
-        orders[address_value][0]("<");
+        orders[address_value][0]("<=");
     } else if (address_value === 12) {
-        orders[address_value][0]("str");
+        orders[address_value][0]("<");
     } else if (address_value === 13) {
+        orders[address_value][0]("str");
+    } else if (address_value === 14) {
         orders[address_value][0]("ldr");
     } else {
         orders[address_value][0]();
