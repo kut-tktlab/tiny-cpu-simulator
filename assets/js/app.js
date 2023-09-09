@@ -21,7 +21,6 @@ const c = document.getElementById("c");
 const ip = document.getElementById("ip");
 const zero = document.getElementById("zero");
 const carry = document.getElementById("carry");
-const negative = document.getElementById("negative");
 
 
 // エラーメッセージやヒントを表示するpタグ
@@ -44,8 +43,8 @@ let is_running = false;
 // プログラム終了の命令が出たかどうかの変数
 let is_end = false;
 
-// エラーが出ているかどうかの変数
-let is_error = false;
+// ステップ実行ボタンが押されたかの変数
+let pushed_run_step_btn = false;
 
 // 実行に関する変数
 let process;
@@ -65,7 +64,6 @@ const registers = {
 const flags = {
     1: false, 
     2: false, 
-    3: false 
 };
 
 // レジスタの値の表示を更新
@@ -106,7 +104,6 @@ const update_flag = () => {
                 carry.textContent = printed_value;
                 break;
             default:
-                negative.textContent = printed_value;
                 break;
         }
     }
@@ -124,33 +121,15 @@ for(let i = 1; i < Object.keys(flags).length + 1; i++) {
 
 // エラーの関数
 const error = (message) => {
-    stop();
-    is_error = true;
+    clearTimeout(process);
+    is_running = false;
 
     // エラーメッセージ表示
     error_message = message;
     output_error_message.textContent = error_message;
 
     registers[4] = 0;
-    stop();
 }
-
-// ヒントの表示・非表示
-upload_button.addEventListener("mouseover", () => {
-    upload_tool_tip.style.display = "block";
-}, false);
-
-upload_button.addEventListener("mouseleave", () => {
-    upload_tool_tip.style.display = "none";
-}, false);
-
-download_button.addEventListener("mouseover", () => {
-    download_tool_tip.style.display = "block";
-}, false);
-
-download_button.addEventListener("mouseleave", () => {
-    download_tool_tip.style.display = "none";
-}, false);
 
 // メモリの入力制限
 base_address.oninput = () => {
@@ -163,14 +142,6 @@ for (let i = 0; i < addresses.length; i++) {
         let memory_value = addresses[i].value;
         addresses[i].value = memory_value.replace(/[^A-Fa-f0-9]/, "");
     }
-}
-
-// 実行停止
-const stop = () => {
-    clearTimeout(process);
-    is_running = false;
-    is_end = false;
-    is_error = false;
 }
 
 // HLT命令(プログラムを終了する命令)
@@ -273,7 +244,6 @@ const add_or_sub = (operator) => {
     if (operator === "+") {
         result = registers[calclated_register_num1] + registers[calclated_register_num2];
     } else {
-        // 計算結果を取得
         result = registers[calclated_register_num1] - registers[calclated_register_num2];
     }
 
@@ -287,15 +257,15 @@ const add_or_sub = (operator) => {
     // 計算結果が255より大きいまたは0未満ならcarryフラグを立てる
     if (result < 0 || result > 255) {
         flags[2] = true;
+
+        // 計算結果を0以上255未満に修正
+        if (result > 255) {
+            result -= 256;
+        } else if (result < 0) {
+            result += 256;
+        }
     } else {
         flags[2] = false;
-    }
-
-    // 計算結果が負の値ならnegativeフラグを立てる
-    if (result < 0) {
-        flags[3] = true;
-    } else {
-        flags[3] = false;
     }
 
     // レジスタの値を更新
@@ -347,10 +317,8 @@ const cmp = () => {
     // Cフラグ、 Nフラグ
     if (result < 0) {
         flags[2] = true;
-        flags[3] = true;
     } else {
         flags[2] = false;
-        flags[3] = false;
     }
 
     // フラグの表示を更新
@@ -372,11 +340,11 @@ const jump = (conditions) => {
     // 条件分岐
     let judge = false;
     if (conditions === ">") {
-        if (!flags[1] && !flags[3]) {
+        if (!flags[1] && !flags[2]) {
             judge = true;
         }
     } else if (conditions === ">=") {
-        if (!flags[3]) {
+        if (!flags[2]) {
             judge = true;
         }
     } else if (conditions === "==") {
@@ -384,11 +352,11 @@ const jump = (conditions) => {
             judge = true;
         }
     } else if (conditions === "<=") {
-        if (flags[1] || flags[3]) {
+        if (flags[1] || flags[2]) {
             judge = true;
         }
     } else if (conditions === "<") {
-        if (flags[3]) {
+        if (flags[2]) {
             judge = true;
         }
     } else {
@@ -549,9 +517,14 @@ const output_memory = () => {
     used_memories = orders[address_value][1];
 
     // 最後のメモリか、終了命令が出ているか、エラーが出ている場合は止める
-    if(registers[4] >= addresses.length - 1 || is_end || is_error) {
+    if(registers[4] >= addresses.length - 1 || is_end) {
         registers[4] = 0;
-        stop();
+
+        // ステップ実行ボタンではないとき
+        if (!pushed_run_step_btn) {
+            clearTimeout(process);
+            is_running = false;
+        }
     } else {
         registers[4]++;
     }
@@ -577,9 +550,10 @@ const interval_runner = () => {
 
 // 実行ボタンの動作
 run_all_button.onclick = () => {
-    // 0.8秒間隔で命令を実行
+    // プログラムを実行
     if(!is_running) {
         is_running = true;
+        is_end = false;
 
         // レジスタ初期化
         for(let i = 1; i < Object.keys(registers).length + 1; i++) {
@@ -605,11 +579,14 @@ run_all_button.onclick = () => {
 run_step_button.onclick = () => {
     // 実行中に押された時の処理
     if (is_running) {
-        stop();
+        clearTimeout(process);
+        is_running = false;
     }
 
+    pushed_run_step_btn = true;
+
     // 最初のメモリを実行する場合はレジスタとフラグとメモリの色を初期化
-    if (registers[4] === 0) {
+    if (is_end) {
         // レジスタを初期化
         for(let i = 1; i < Object.keys(registers).length + 1; i++) {
             registers[i] = 0;
@@ -621,16 +598,21 @@ run_step_button.onclick = () => {
             flags[i] = false;
             update_flag();
         }
+
+        is_end = false;
     }
 
     output_memory();
+
+    pushed_run_step_btn = false;
 }
 
 // ストップボタンの動作
 stop_button.onclick = () => {
     if(is_running) {
         registers[4] = 0;
-        stop();
+        clearTimeout(process);
+        is_running = false;
     }
 }
 
@@ -666,12 +648,12 @@ shift_right_button.onclick = () => {
     addresses[address_num].value = "00";
 }
 
-// リセットボタンの動作
+// ゼロクリアボタンの動作
 reset_button.onclick = () => {
     address_form.reset();
 
     // メモリマップの色を初期化
-    for (let i = past_address_number; i < past_address_number + used_memories - 1; i++) {
+    for (let i = 0; i < addresses.length; i++) {
         addresses[i].style.backgroundColor = "";
         addresses[i].style.borderWidth = "";
     }
