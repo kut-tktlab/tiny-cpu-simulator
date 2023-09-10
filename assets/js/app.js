@@ -109,6 +109,36 @@ const update_flag = () => {
     }
 }
 
+// メモリ編集に関わる要素の状態を変える
+const change_edit_items_state = (state) => {
+    reset_button.disabled = state;
+    download_button.disabled = state;
+    upload_button.disabled = state;
+    shift_left_button.disabled = state;
+    shift_right_button.disabled = state;
+
+    for (let i = 0; i < addresses.length; i++) {
+        addresses[i].disabled = state;
+        addresses[i].style.color = "#000";
+    }
+
+    base_address.disabled = state;
+
+    if (state) {
+        reset_button.style.boxShadow = "none";
+        download_button.style.boxShadow = "none";
+        upload_button.style.boxShadow = "none";
+        shift_left_button.style.boxShadow = "none";
+        shift_right_button.style.boxShadow = "none";
+    } else {
+        reset_button.style.boxShadow = "";
+        download_button.style.boxShadow = "";
+        upload_button.style.boxShadow = "";
+        shift_left_button.style.boxShadow = "";
+        shift_right_button.style.boxShadow = "";
+    }
+}
+
 // レジスタの値を表示
 for(let i = 1; i < Object.keys(registers).length + 1; i++) {
     update_register(i);
@@ -123,6 +153,9 @@ for(let i = 1; i < Object.keys(flags).length + 1; i++) {
 const error = (message) => {
     clearTimeout(process);
     is_running = false;
+
+    // メモリ編集に関わるボタンなどを使える様にする
+    change_edit_items_state(false);
 
     // エラーメッセージ表示
     error_message = message;
@@ -332,7 +365,7 @@ const jump = (conditions) => {
     const jump_destination_address = parseInt(addresses[registers[4]].value, 16);
 
     // 指定したアドレスがない場合
-    if (jump_destination_address > addresses.length - 1) {
+    if (jump_destination_address > addresses.length - 1 || isNaN(jump_destination_address)) {
         error("アドレスの指定に誤りがあります");
         return;
     }
@@ -398,7 +431,7 @@ const str_or_ldr = (argument) => {
     let read_address = registers[register_num2];
 
     // 指定したアドレスがない場合
-    if (read_address > addresses.length - 1) {
+    if (read_address > addresses.length - 1 || isNaN(read_address)) {
         error("アドレスの指定に誤りがあります");
         return;
     }
@@ -523,7 +556,7 @@ const output_memory = () => {
     // 命令で使用されたメモリの数を保存
     used_memories = orders[address_value][1];
 
-    // 最後のメモリか、終了命令が出ているか、エラーが出ている場合は止める
+    // 最後のメモリか、終了命令が出ている場合は止める
     if(registers[4] >= addresses.length - 1 || is_end) {
         registers[4] = 0;
 
@@ -531,6 +564,9 @@ const output_memory = () => {
         if (!pushed_run_step_btn) {
             clearTimeout(process);
             is_running = false;
+
+            // メモリ編集に関わるボタンなどを使える様にする
+            change_edit_items_state(false);
         }
     } else {
         registers[4]++;
@@ -577,6 +613,9 @@ run_all_button.onclick = () => {
         // 実行速度を取得
         const run_speed = speed.value;
 
+        // メモリ操作に関わるボタンなどを使えない様にする
+        change_edit_items_state(true);
+
         // プログラム実行
         process = setTimeout(interval_runner, run_speed);
     }
@@ -588,6 +627,9 @@ run_step_button.onclick = () => {
     if (is_running) {
         clearTimeout(process);
         is_running = false;
+
+        // メモリ編集に関わるボタンなどを使える様にする
+        change_edit_items_state(false);
     }
 
     pushed_run_step_btn = true;
@@ -619,9 +661,27 @@ stop_button.onclick = () => {
     if(is_running) {
         clearTimeout(process);
         is_running = false;
+
+        // メモリ編集に関わるボタンなどを使える様にする
+        change_edit_items_state(false);
     } else {
-        registers[4] = 0;
-        is_end = true;
+        // レジスタを初期化
+        for(let i = 1; i < Object.keys(registers).length + 1; i++) {
+            registers[i] = 0;
+            update_register(i);
+        }
+
+        // フラグ初期化
+        for(let i = 1; i < Object.keys(flags).length + 1; i++) {
+            flags[i] = false;
+            update_flag();
+        }
+
+        // メモリマップの色を初期化
+        for (let i = 0; i < addresses.length; i++) {
+            addresses[i].style.backgroundColor = "";
+            addresses[i].style.borderWidth = "";
+        }
     }
 }
 
@@ -629,7 +689,7 @@ stop_button.onclick = () => {
 shift_left_button.onclick = () => {
     let address_num = parseInt(base_address.value, 16);
     
-    if (address_num > addresses.length - 1) {
+    if (address_num > addresses.length - 1 || isNaN(address_num)) {
         error("シフト用のアドレスの指定に誤りがあります");
         return;
     }
@@ -645,7 +705,7 @@ shift_left_button.onclick = () => {
 shift_right_button.onclick = () => {
     let address_num = parseInt(base_address.value, 16);
 
-    if (address_num > addresses.length - 1) {
+    if (address_num > addresses.length - 1 || isNaN(address_num)) {
         error("シフト用のアドレスの指定に誤りがあります");
         return;
     }
@@ -666,6 +726,7 @@ reset_button.onclick = () => {
         addresses[i].style.backgroundColor = "";
         addresses[i].style.borderWidth = "";
     }
+
     if (past_accessed_address !== null) {
         addresses[past_accessed_address].style.backgroundColor = "";
         past_accessed_address = null;
@@ -695,7 +756,7 @@ upload_button.onclick = () => {
     // エラーメッセージ初期化
     error_message = "";
     output_error_message.textContent = error_message;
-    
+
     const file_input = document.createElement("input");
     file_input.type = "file";
     file_input.accept = ".hex,.txt";
