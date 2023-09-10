@@ -592,7 +592,7 @@ run_step_button.onclick = () => {
 
     pushed_run_step_btn = true;
 
-    // 最初のメモリを実行する場合はレジスタとフラグとメモリの色を初期化
+    // 終了命令後の場合はレジスタとフラグとメモリの色を初期化
     if (is_end) {
         // レジスタを初期化
         for(let i = 1; i < Object.keys(registers).length + 1; i++) {
@@ -617,9 +617,11 @@ run_step_button.onclick = () => {
 // ストップボタンの動作
 stop_button.onclick = () => {
     if(is_running) {
-        registers[4] = 0;
         clearTimeout(process);
         is_running = false;
+    } else {
+        registers[4] = 0;
+        is_end = true;
     }
 }
 
@@ -726,5 +728,5 @@ for(let i = 0; i < addresses.length; i++) {
                 addresses[i].blur();
             }
         }
-    })
+    });
 }
