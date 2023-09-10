@@ -692,6 +692,10 @@ download_button.onclick = () => {
 
 // アップロードボタンの動作
 upload_button.onclick = () => {
+    // エラーメッセージ初期化
+    error_message = "";
+    output_error_message.textContent = error_message;
+    
     const file_input = document.createElement("input");
     file_input.type = "file";
     file_input.accept = ".hex,.txt";
@@ -705,8 +709,15 @@ upload_button.onclick = () => {
             let content = reader.result;
             let memory_values = content.split(/\s+/);
 
+            const hex_pattern = /^[0-9A-Fa-f]+$/;
             for (let i = 0; i < memory_values.length - 1; i++) {
-                addresses[i].value = memory_values[i];
+                // ファイルの中身が16進数か確認
+                if (hex_pattern.test(memory_values[i])) {
+                    addresses[i].value = memory_values[i];
+                } else {
+                    error("ファイルに16進数以外の値が含まれています");
+                    break;
+                }
             }
         }
 
