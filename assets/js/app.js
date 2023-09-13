@@ -281,7 +281,7 @@ const add_or_sub = (operator) => {
     }
 
     // 計算結果が0ならzeroフラグを立てる
-    if (result === 0) {
+    if ((result & 0xff) === 0) {
         flags[1] = true;
     } else {
         flags[1] = false;
