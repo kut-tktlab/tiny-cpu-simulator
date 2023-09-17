@@ -5,11 +5,12 @@ const run_step_button = document.getElementById("run_step_button")
 const reset_button = document.getElementById("reset-button");
 const download_button = document.getElementById("download-button");
 const upload_button = document.getElementById("upload-button");
-const shift_left_button = document.getElementById("shift-left-button");
-const shift_right_button = document.getElementById("shift-right-button");
-
-// シフト用のメモリ
-const base_address = document.getElementById("base-address");
+const copy_and_paste_button = document.getElementById("copy-and-paste-button");
+const copy_button = document.getElementById("copy-button");
+const cut_button = document.getElementById("cut-button");
+const paste_button = document.getElementById("paste-button");
+const run_mode_button = document.getElementById("run-mode-button");
+const range_button = document.getElementById("range-button");
 
 // 実行速度
 const speed = document.getElementById("speed");
@@ -45,6 +46,16 @@ let is_end = false;
 
 // ステップ実行ボタンが押されたかの変数
 let pushed_run_step_btn = false;
+
+// メモリ編集中かの変数
+let copy_and_paste_mode = false;
+
+// メモリ編集に関する変数
+let from_address = null;
+let to_address = null;
+let target_address = null;
+let count_of_address = 1;
+let copied_memories = [];
 
 // 実行に関する変数
 let process;
@@ -111,31 +122,20 @@ const update_flag = () => {
 
 // メモリ編集に関わる要素の状態を変える
 const change_edit_items_state = (state) => {
-    reset_button.disabled = state;
-    download_button.disabled = state;
-    upload_button.disabled = state;
-    shift_left_button.disabled = state;
-    shift_right_button.disabled = state;
+    copy_and_paste_button.disabled = state;
 
     for (let i = 0; i < addresses.length; i++) {
-        addresses[i].disabled = state;
-        addresses[i].style.color = "#000";
+        if (state) {
+            addresses[i].setAttribute("readonly", "readonly");
+        } else {
+            addresses[i].removeAttribute("readonly");
+        }
     }
 
-    base_address.disabled = state;
-
     if (state) {
-        reset_button.style.boxShadow = "none";
-        download_button.style.boxShadow = "none";
-        upload_button.style.boxShadow = "none";
-        shift_left_button.style.boxShadow = "none";
-        shift_right_button.style.boxShadow = "none";
+        copy_and_paste_button.style.boxShadow = "none";
     } else {
-        reset_button.style.boxShadow = "";
-        download_button.style.boxShadow = "";
-        upload_button.style.boxShadow = "";
-        shift_left_button.style.boxShadow = "";
-        shift_right_button.style.boxShadow = "";
+        copy_and_paste_button.style.boxShadow = "";
     }
 }
 
@@ -149,7 +149,7 @@ for(let i = 1; i < Object.keys(flags).length + 1; i++) {
     update_flag();
 }
 
-// エラーの関数
+// 実行時のエラーの関数
 const error = (message) => {
     clearTimeout(process);
     is_running = false;
@@ -164,16 +164,111 @@ const error = (message) => {
     registers[4] = 0;
 }
 
-// メモリの入力制限
-base_address.oninput = () => {
-    let memory_value = base_address.value;
-    base_address.value = memory_value.replace(/[^A-Fa-f0-9]/, "");
+// 編集時のエラーの関数
+const edit_error = (message) => {
+    // エラーメッセージ表示
+    error_message = message;
+    output_error_message.textContent = error_message;
 }
 
 for (let i = 0; i < addresses.length; i++) {
+    // 入力制限
     addresses[i].oninput = () => {
         let memory_value = addresses[i].value;
         addresses[i].value = memory_value.replace(/[^A-Fa-f0-9]/, "");
+    }
+
+    // メモリ編集中にメモリがクリックされた場合
+    addresses[i].onclick = () => {
+        if (copy_and_paste_mode) {
+            // エラーメッセージを削除
+            output_error_message.textContent = "";
+
+            // 編集するメモリを指定
+            if (count_of_address === 1) {
+                // 範囲が設定されていたら一旦初期化
+                if (from_address !== null && to_address !== null) {
+                    // 色を元に戻す
+                    for (let i = from_address; i <= to_address; i++) {
+                        addresses[i].style.backgroundColor = ""
+                    }
+
+                    from_address = null;
+                    to_address = null;
+
+                    // ゼロクリアボタンとコピーボタンとカットボタンを使えないようにする
+                    copy_button.disabled = true;
+                    cut_button.disabled = true;
+                    reset_button.disabled = true;
+                    range_button.disabled = true;
+                    copy_button.style.boxShadow = "none";
+                    cut_button.style.boxShadow = "none";
+                    reset_button.style.boxShadow = "none";
+                    range_button.style.boxShadow = "none";
+                }
+
+                from_address = i;
+
+                // 色を変える
+                addresses[from_address].style.backgroundColor = "#87cefa"
+
+                count_of_address = 2;
+            } else if (count_of_address === 2){
+                to_address = i;
+
+                // 範囲を整形
+                if (from_address > to_address) {
+                    [from_address, to_address] = [to_address, from_address];
+
+                    // from_addressの色が変わらないので変える
+                    addresses[from_address].style.backgroundColor = "#87cefa"
+                }
+
+                // 色を変える
+                for (let i = from_address + 1; i <= to_address; i++) {
+                    addresses[i].style.backgroundColor = "#87cefa";
+                }
+
+                // ゼロクリアボタンとコピーボタンとカットボタンを使えるようにする
+                copy_button.disabled = false;
+                cut_button.disabled = false;
+                reset_button.disabled = false;
+                copy_button.style.boxShadow = "";
+                cut_button.style.boxShadow = "";
+                reset_button.style.boxShadow = "";
+
+                count_of_address = 1;
+            } else if (count_of_address === 3) {
+                // メモリが指定されていた場合初期化
+                if (target_address !== null) {
+                    // 色を元に戻す
+                    addresses[target_address].style.backgroundColor = "";
+
+                    target_address = null;
+                }
+                target_address = i;
+
+                // 色を元に戻す
+                for (let i = from_address; i <= to_address; i++) {
+                    addresses[i].style.backgroundColor = "";
+                }
+
+                // 色を変える
+                addresses[i].style.backgroundColor = "#87cefa";
+
+                // ゼロクリアボタンとコピーボタンとカットボタンを使えないようにする
+                copy_button.disabled = true;
+                cut_button.disabled = true;
+                reset_button.disabled = true;
+                copy_button.style.boxShadow = "none";
+                cut_button.style.boxShadow = "none";
+                reset_button.style.boxShadow = "none";
+
+                // ペーストボタンを使えるようにする
+                paste_button.disabled = false;
+                paste_button.style.boxShadow = "";
+            }
+        }
     }
 }
 
@@ -685,41 +780,19 @@ stop_button.onclick = () => {
     }
 }
 
-// 左シフトボタンの動作
-shift_left_button.onclick = () => {
-    let address_num = parseInt(base_address.value, 16);
-    
-    if (address_num > addresses.length - 1 || isNaN(address_num)) {
-        error("シフト用のアドレスの指定に誤りがあります");
-        return;
+// メモリ編集ボタンの動作
+copy_and_paste_button.onclick = () => {
+    // レジスタを初期化
+    for(let i = 1; i < Object.keys(registers).length + 1; i++) {
+        registers[i] = 0;
+        update_register(i);
     }
 
-    for (let i = address_num + 1; i < addresses.length; i++) {
-        addresses[i - 1].value = addresses[i].value;
+    // フラグ初期化
+    for(let i = 1; i < Object.keys(flags).length + 1; i++) {
+        flags[i] = false;
+        update_flag();
     }
-    
-    addresses[addresses.length - 1].value = "00";
-}
-
-// 右シフトボタンの動作
-shift_right_button.onclick = () => {
-    let address_num = parseInt(base_address.value, 16);
-
-    if (address_num > addresses.length - 1 || isNaN(address_num)) {
-        error("シフト用のアドレスの指定に誤りがあります");
-        return;
-    }
-
-    for (let i = addresses.length - 2; i >= address_num; i--) {
-        addresses[i + 1].value = addresses[i].value;
-    }
-
-    addresses[address_num].value = "00";
-}
-
-// ゼロクリアボタンの動作
-reset_button.onclick = () => {
-    address_form.reset();
 
     // メモリマップの色を初期化
     for (let i = 0; i < addresses.length; i++) {
@@ -727,10 +800,200 @@ reset_button.onclick = () => {
         addresses[i].style.borderWidth = "";
     }
 
-    if (past_accessed_address !== null) {
-        addresses[past_accessed_address].style.backgroundColor = "";
-        past_accessed_address = null;
+    // メモリ編集ボタンを非表示
+    copy_and_paste_button.style.display = "none";
+
+    // 実行モードボタンとメモリ編集に使用するボタンを表示
+    copy_button.style.display = "block";
+    cut_button.style.display = "block";
+    paste_button.style.display = "block";
+    reset_button.style.display = "block";
+    run_mode_button.style.display = "block";
+    range_button.style.display = "block";
+    copy_button.style.boxShadow = "none";
+    cut_button.style.boxShadow = "none";
+    paste_button.style.boxShadow = "none";
+    reset_button.style.boxShadow = "none";
+    range_button.style.boxShadow = "none";
+
+    // メモリ編集で使用しないものを使用不可にする
+    run_all_button.disabled = true;
+    run_step_button.disabled = true;
+    stop_button.disabled = true;
+    speed.disabled = true;
+    upload_button.disabled = true;
+    download_button.disabled = true;
+    reset_button.disabled = true;
+    run_all_button.style.boxShadow = "none";
+    run_step_button.style.boxShadow = "none";
+    stop_button.style.boxShadow = "none";
+    upload_button.style.boxShadow = "none";
+    download_button.style.boxShadow = "none";
+    reset_button.style.boxShadow = "none";
+
+    for (let i = 0; i < addresses.length; i++) {
+        addresses[i].setAttribute("readonly", "readonly");
     }
+
+    copy_and_paste_mode = true;
+}
+
+// ゼロクリアボタンの動作
+reset_button.onclick = () => {
+    for (let i = from_address; i <= to_address; i++) {
+        addresses[i].value = "00";
+        addresses[i].style.backgroundColor = "";
+    }
+
+    count_of_address = 1;
+}
+
+// コピーボタンの動作
+copy_button.onclick = () => {
+    // コピーされた値がすでにあった場合は消す
+    if (copied_memories.length > 0) {
+        copied_memories = [];
+    }
+
+    for (let i = from_address; i <= to_address; i++) {
+        copied_memories.push(addresses[i].value);
+    }
+
+    // 範囲指定ボタンを使えるようにする
+    range_button.disabled = false;
+    range_button.style.boxShadow = "";
+
+    count_of_address = 3;
+}
+
+// カットボタンの動作
+cut_button.onclick = () => {
+    // コピーされた値がすでにあった場合は消す
+    if (copied_memories.length > 0) {
+        copied_memories = [];
+    }
+
+    for (let i = from_address; i <= to_address; i++) {
+        copied_memories.push(addresses[i].value);
+        addresses[i].value = "00";
+    }
+
+    // 範囲指定ボタンを使えるようにする
+    range_button.disabled = false;
+    range_button.style.boxShadow = "";
+
+    count_of_address = 3;
+}
+
+// ペーストボタンの動作
+paste_button.onclick = () => {
+    // コピーした内容がメモリ数を超えたらエラー
+    if (target_address + copied_memories.length > addresses.length) {
+        edit_error("コピーした内容がメモリ数を超えています");
+
+        addresses[target_address].style.backgroundColor = "";
+
+        count_of_address = 3;
+
+        return;
+    }
+
+    for (let i = 0; i < copied_memories.length; i++) {
+        addresses[target_address + i].value = copied_memories[i];
+    }
+
+    addresses[target_address].style.backgroundColor = "";
+
+    count_of_address = 3;
+}
+
+// 範囲指定に戻るボタンの動作
+range_button.onclick = () => {
+    count_of_address = 1;
+
+    // メモリマップの色を初期化
+    for (let i = 0; i < addresses.length; i++) {
+        addresses[i].style.backgroundColor = "";
+        addresses[i].style.borderWidth = "";
+    }
+
+    // メモリ編集に関するボタンを使えないようにする
+    copy_button.disabled = true;
+    cut_button.disabled = true;
+    reset_button.disabled = true;
+    range_button.disabled = true;
+    paste_button.disabled = true;
+    paste_button.style.boxShadow = "none";
+    copy_button.style.boxShadow = "none";
+    cut_button.style.boxShadow = "none";
+    reset_button.style.boxShadow = "none";
+    range_button.style.boxShadow = "none";
+}
+
+// 実行モードボタンの動作
+run_mode_button.onclick = () => {
+    // 範囲が設定されていたら初期化
+    if (from_address !== null && to_address !== null) {
+        // 色を元に戻す
+        for (let i = from_address; i <= to_address; i++) {
+            addresses[i].style.backgroundColor = "";
+        }
+
+        if (target_address !== null) {
+            addresses[target_address].style.backgroundColor = "";
+        }
+
+        // 変数を初期化
+        from_address = null;
+        to_address = null;
+        target_address = null;
+        count_of_address = 1;
+        copied_memories = [];
+
+        // メモリ編集に関するボタンを使えないようにする
+        copy_button.disabled = true;
+        cut_button.disabled = true;
+        reset_button.disabled = true;
+        range_button.disabled = true;
+        paste_button.disabled = true;
+        range_button.style.boxShadow = "none";
+        copy_button.style.boxShadow = "none";
+        cut_button.style.boxShadow = "none";
+        reset_button.style.boxShadow = "none";
+        paste_button.style.boxShadow = "none";
+    }
+
+    // 実行モードボタンとコピペに使用するボタンを非表示
+    reset_button.style.display = "none";
+    copy_button.style.display = "none";
+    cut_button.style.display = "none";
+    paste_button.style.display = "none";
+    run_mode_button.style.display = "none";
+    range_button.style.display = "none";
+
+    // メモリ編集ボタンを表示
+    copy_and_paste_button.style.display = "block";
+
+    // 実行モードで使用するボタンを使用できるようにする
+    run_all_button.disabled =  false;
+    run_step_button.disabled =  false;
+    stop_button.disabled =  false;
+    speed.disabled =  false;
+    upload_button.disabled =  false;
+    download_button.disabled =  false;
+    reset_button.disabled =  false;
+    run_all_button.style.boxShadow = "";
+    run_step_button.style.boxShadow = "";
+    stop_button.style.boxShadow = "";
+    upload_button.style.boxShadow = "";
+    download_button.style.boxShadow = "";
+    reset_button.style.boxShadow = "";
+
+    for (let i = 0; i < addresses.length; i++) {
+        addresses[i].removeAttribute("readonly");
+    }
+
+    copy_and_paste_mode = false;
 }
 
 // ダウンロードボタンの動作
