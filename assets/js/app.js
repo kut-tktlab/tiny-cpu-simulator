@@ -932,17 +932,13 @@ range_button.onclick = () => {
 
 // 実行モードボタンの動作
 run_mode_button.onclick = () => {
+    // 色を元に戻す
+    for (let i = 0; i < addresses.length; i++) {
+        addresses[i].style.backgroundColor = "";
+    }
+
     // 範囲が設定されていたら初期化
-    if (from_address !== null && to_address !== null) {
-        // 色を元に戻す
-        for (let i = from_address; i <= to_address; i++) {
-            addresses[i].style.backgroundColor = "";
-        }
-
-        if (target_address !== null) {
-            addresses[target_address].style.backgroundColor = "";
-        }
-
+    if (from_address !== null || to_address !== null) {
         // 変数を初期化
         from_address = null;
         to_address = null;
