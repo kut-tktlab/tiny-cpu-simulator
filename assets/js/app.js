@@ -690,7 +690,7 @@ shift_left_button.onclick = () => {
     let address_num = parseInt(base_address.value, 16);
     
     if (address_num > addresses.length - 1 || isNaN(address_num)) {
-        error("シフト用のアドレスの指定に誤りがあります");
+        error("シフト範囲のアドレスの指定に誤りがあります");
         return;
     }
 
@@ -706,7 +706,7 @@ shift_right_button.onclick = () => {
     let address_num = parseInt(base_address.value, 16);
 
     if (address_num > addresses.length - 1 || isNaN(address_num)) {
-        error("シフト用のアドレスの指定に誤りがあります");
+        error("シフト範囲のアドレスの指定に誤りがあります");
         return;
     }
 
@@ -719,17 +719,22 @@ shift_right_button.onclick = () => {
 
 // ゼロクリアボタンの動作
 reset_button.onclick = () => {
-    address_form.reset();
+    let address_num = parseInt(base_address.value, 16);
 
-    // メモリマップの色を初期化
-    for (let i = 0; i < addresses.length; i++) {
-        addresses[i].style.backgroundColor = "";
-        addresses[i].style.borderWidth = "";
+    if (address_num > addresses.length - 1 || isNaN(address_num)) {
+        error("クリア範囲のアドレスの指定に誤りがあります");
+        return;
     }
 
-    if (past_accessed_address !== null) {
-        addresses[past_accessed_address].style.backgroundColor = "";
-        past_accessed_address = null;
+    for (let i = address_num; i < addresses.length; i++) {
+        addresses[i].value = "00";
+
+        // メモリマップの色を初期化
+        addresses[i].style.backgroundColor = "";
+        addresses[i].style.borderWidth = "";
+        if (past_accessed_address == i) {
+            past_accessed_address = null;
+        }
     }
 }
 
