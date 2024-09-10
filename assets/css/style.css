@@ -200,16 +200,6 @@
         text-align: center;
         box-shadow: none;
     }
-
-    .edit-btns-area {
-        background-color: #C8E7FA;
-    }
-
-    .edit-btns {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-    }
 }
 
 @media screen and (min-width: 1024px) {
@@ -373,7 +363,7 @@
     }
 
     .reset-button {
-        margin: 10px 5px;
+        margin: 5px;
         font-size: 20px;
         background-color: #fff;
     }
@@ -419,20 +409,5 @@
 
     .center {
         padding-right: 20px;
-    }
-
-    .edit-memory {
-        margin: 5px 0;
-        font-size: 20px;
-    }
-
-    .edit-btns-area {
-        background-color: #C8E7FA;
-    }
-
-    .edit-btns {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
     }
 }

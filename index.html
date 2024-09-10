@@ -422,15 +422,15 @@
                 </table>
             </form>
         </div>
-        <div class="edit-btns-area">
-            <div class="edit-btns">
-                <button class="reset-button" id="copy-and-paste-button">メモリ編集</button>
-                <button class="reset-button" id="run-mode-button" style="display: none;">メモリ編集を終了</button>
-                <button class="reset-button" id="reset-button" style="display: none;" disabled="true">ゼロクリア</button>
-                <button class="reset-button" id="copy-button" style="display: none;" disabled="true">コピー</button>
-                <button class="reset-button" id="cut-button" style="display: none;" disabled="true">カット</button>
-                <button class="reset-button" id="paste-button" style="display: none;" disabled="true">ペースト</button>
-                <button class="reset-button" id="range-button" style="display: none;" disabled="true">範囲指定に戻る</button>
+        <div class="title-and-reset-button">
+            <div></div>
+            <div class="shift-btns">
+                メモリ操作:
+                <input type="text" value="00" class="base-address" id="base-address" maxlength="2">
+                番地以降を
+                <button class="reset-button" id="shift-left-button">左に移動</button>
+                <button class="reset-button" id="shift-right-button">右に移動</button>
+                <button class="reset-button" id="reset-button">ゼロクリア</button>
             </div>
         </div>
     </div>
